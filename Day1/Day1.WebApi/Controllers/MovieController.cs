@@ -7,7 +7,7 @@ using System.Web.Http;
 
 namespace Day1.WebApi.Controllers
 {
-    public /* static */ class MovieController : ApiController
+    public class MovieController : ApiController
         {
         static List<Movie> movies = new List<Movie>()
         { new Movie { Id = "001", Title = "The Godfather" },
@@ -27,9 +27,11 @@ namespace Day1.WebApi.Controllers
             }
 
             // POST api/<controller>
-            public void Post([FromBody] string value)
+            public IEnumerable<Movie> Post(Movie movie)
             {
-
+                List<Movie> movies = new List<Movie>();
+                movies.Add(movie);
+                return movies;
             }
 
             // PUT api/<controller>/5
