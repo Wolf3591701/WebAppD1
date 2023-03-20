@@ -7,31 +7,17 @@ using System.Web.Http;
 
 namespace Day1.WebApi.Controllers
 {
-    public class Movie
-    {
-        public string Id { get; set; }
-        public string Title { get; set; }
-    }
-
-    public class Program
-    {
-        public static void Main()
+    public /* static */ class MovieController : ApiController
         {
-            // Create a new List of Movie objects
-            List<Movie> movies = new List<Movie>();
-
-            // Add some movies to the list
-            movies.Add(new Movie { Id = "001", Title = "The Godfather" });
-            movies.Add(new Movie { Id = "002", Title = "The Shawshank Redemption" });
-            movies.Add(new Movie { Id = "003", Title = "The Dark Knight" });
-        }
-
-        public class MovieController : ApiController
-        {
-            // GET api/<controller>
-            public IEnumerable<string> Get()
+        static List<Movie> movies = new List<Movie>()
+        { new Movie { Id = "001", Title = "The Godfather" },
+            new Movie { Id = "002", Title = "The Shawshank Redemption" } ,
+            new Movie { Id = "003", Title = "The Dark Knight" } };
+        // GET api/<controller>
+        
+        public IEnumerable<Movie> GetMovies()
             {
-                return new string[] { "value1", "value2" };
+                return movies;
             }
 
             // GET api/<controller>/5
@@ -43,6 +29,7 @@ namespace Day1.WebApi.Controllers
             // POST api/<controller>
             public void Post([FromBody] string value)
             {
+
             }
 
             // PUT api/<controller>/5
@@ -54,6 +41,5 @@ namespace Day1.WebApi.Controllers
             public void Delete(int id)
             {
             }
-        }
     }
 }
