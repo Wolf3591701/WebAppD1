@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Ajax.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -17,17 +18,39 @@ namespace Day1.WebApi.Controllers
         
         public IEnumerable<Movie> GetMovies()
             {
+
+            if (movies == null)
+            {
+                throw new Exception("There is nothing to get!");
+            }
+            else
+            {
                 return movies;
+            }
+                
+            
             }
 
             // GET api/<controller>/5
-            public string Get(int id)
+            public Movie GetMoviesById(string Id)
             {
-                return "value";
+
+            try
+            {
+                var movieById = (from m in movies
+                                 where m.Id == Id
+                                 select m).FirstOrDefault();
+                return movieById;
             }
+            catch 
+            {
+                throw new Exception($"There is no movie with the entered Id!");
+            }
+            
+        }
 
             // POST api/<controller>
-            public IEnumerable<Movie> Post(Movie movie)
+            public IEnumerable<Movie> PostMovie(Movie movie)
             {
                 List<Movie> movies = new List<Movie>();
                 movies.Add(movie);
@@ -35,12 +58,25 @@ namespace Day1.WebApi.Controllers
             }
 
             // PUT api/<controller>/5
-            public void Put(int id, [FromBody] string value)
+            public Movie PutMovie(string Id,Movie movie)
             {
+                var movieToUpdate = (from m in movies
+                                     where m.Id == Id
+                                     select m).FirstOrDefault();
+            
+            if (movieToUpdate == null)
+            {
+                throw new Exception ($"Movie with ID: {Id} does not exist!");
+            }
+
+            movieToUpdate.Id = Id;
+            movieToUpdate.Title = movie.Title;
+
+            return movieToUpdate;
             }
 
             // DELETE api/<controller>/5
-            public void Delete(int id)
+            public void DeleteMovie(string Id, Movie movie)
             {
             }
     }
