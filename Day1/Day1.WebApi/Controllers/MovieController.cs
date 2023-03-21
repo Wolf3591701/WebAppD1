@@ -10,74 +10,125 @@ namespace Day1.WebApi.Controllers
 {
     public class MovieController : ApiController
         {
+
         static List<Movie> movies = new List<Movie>()
         { new Movie { Id = "001", Title = "The Godfather" },
             new Movie { Id = "002", Title = "The Shawshank Redemption" } ,
-            new Movie { Id = "003", Title = "The Dark Knight" } };
-        // GET api/<controller>
+            new Movie { Id = "003", Title = "The Dark Knight" } 
+        };
         
-        public IEnumerable<Movie> GetMovies()
+        // GET api/<controller>
+        public HttpResponseMessage GetMovies()
             {
 
-            if (movies == null)
-            {
-                throw new Exception("There is nothing to get!");
-            }
-            else
-            {
-                return movies;
-            }
-                
+                try
+                {
+                    if (movies != null)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, movies);
+                    }
+                    else
+                    {
+                        return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Movies not found!");
+                    }
+                } 
+                catch (Exception)
+                {
+                        return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "An error occured while executing your request!");
+                }
             
             }
 
-            // GET api/<controller>/5
-            public Movie GetMoviesById(string Id)
-            {
+        // GET api/<controller>/5
+        public HttpResponseMessage GetMoviesById(string id)
+        {
 
             try
             {
-                var movieById = (from m in movies
-                                 where m.Id == Id
-                                 select m).FirstOrDefault();
-                return movieById;
+                Movie movie = movies.Where(m => m.Id == id).FirstOrDefault();
+
+                if (movie != null)
+                {
+                    return Request.CreateResponse<Movie>(HttpStatusCode.OK, movie);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Movie with that Id was not found!");
+                }
             }
-            catch 
+            catch (Exception)
             {
-                throw new Exception($"There is no movie with the entered Id!");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "An error occured while executing your request!");
             }
-            
+
         }
 
-            // POST api/<controller>
-            public IEnumerable<Movie> PostMovie(Movie movie)
+        // POST api/<controller>
+        public HttpResponseMessage PostMovie(Movie movie)
+        {
+            try
             {
-                List<Movie> movies = new List<Movie>();
-                movies.Add(movie);
-                return movies;
+                if (movies != null)
+                {
+                    movies.Add(movie);
+                    return Request.CreateResponse(HttpStatusCode.OK, movies);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Movie was not stored!");
+                }
             }
+            catch
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "An error ocurred while executing your request!");
+            }
+        }
 
             // PUT api/<controller>/5
-            public Movie PutMovie(string Id,Movie movie)
+            public HttpResponseMessage PutMovie(string id, Movie movie)
             {
-                var movieToUpdate = (from m in movies
-                                     where m.Id == Id
-                                     select m).FirstOrDefault();
-            
-            if (movieToUpdate == null)
-            {
-                throw new Exception ($"Movie with ID: {Id} does not exist!");
-            }
 
-            movieToUpdate.Id = Id;
-            movieToUpdate.Title = movie.Title;
+                try
+                {
+                    Movie movieToUpdate = movies.Where(m => m.Id == id).FirstOrDefault();
+                    movieToUpdate.Title = movie.Title;
 
-            return movieToUpdate;
+                    if (movieToUpdate != null)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, movieToUpdate);
+                    }
+                    else
+                    {
+                        return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Movie title to be updated was not found!");
+                    }
+                }
+                catch
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "An error ocurred while executing your request!");
+                }
+
             }
 
             // DELETE api/<controller>/5
-            public void DeleteMovie(string Id, Movie movie)
+            public HttpResponseMessage DeleteMovie(string id)
             {
+                try
+                {
+
+                    if (id == null && ModelState.IsValid)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, movies);
+                    }
+                    else
+                    {
+                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+                    }
+                }
+                catch
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "An error ocurred while executing your request!");
+            }
+            
             }
     }
 }
