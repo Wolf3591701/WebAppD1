@@ -9,14 +9,14 @@ using System.Net.Http;
 using System.Runtime.Remoting.Messaging;
 using System.Web.Http;
 
-namespace Day1.WebApi.Controllers
+namespace Employees.WebApi.Controllers
 {
     public class EmployeeController : ApiController
     {
         static string connectionString = "Data Source=DESKTOP-DG2UJNT;Initial Catalog=RentCar;Integrated Security=True";
 
-        // GET api/values
-        [Route("api/values/GetAllEmployee")]
+        // GET api/employee
+        [Route("api/employee/GetAllEmployee")]
         public HttpResponseMessage GetAllEmployee()
         {
             SqlConnection connection = new SqlConnection(connectionString);
@@ -40,10 +40,10 @@ namespace Day1.WebApi.Controllers
                     emp.LastName = reader.GetString(2);
                     emp.Birthday = reader.GetDateTime(3);
 
-                    connection.Close();
                     list.Add(emp);
-
                 }
+
+
 
                 if (reader.HasRows)
                 {
@@ -53,14 +53,13 @@ namespace Day1.WebApi.Controllers
                 {
                     return Request.CreateErrorResponse(HttpStatusCode.NotFound, "No employee records found!");
                 }
-
             }
         }
 
 
-        // GET api/values
-        [Route("api/values/GetEmployeeId/{id}")]
-        public HttpResponseMessage GetEmployeeId(Guid id)
+        // GET api/employee
+        [Route("api/employee/{id}")]
+        public HttpResponseMessage GetEmployee(Guid id)
         {
 
             try
@@ -104,8 +103,8 @@ namespace Day1.WebApi.Controllers
             }
         }
 
-        // POST api/values
-        [Route("api/values/PostEmployee")]
+        // POST api/employee
+        [Route("api/employee/")]
         public HttpResponseMessage PostEmployee(Employee employee)
         {
             try
@@ -142,9 +141,10 @@ namespace Day1.WebApi.Controllers
             }
         }
 
-        // PUT api/values/5
-        [Route("api/values/PutEmployee")]
-        public HttpResponseMessage Put(Guid id, Employee employee)
+        // PUT api/employee
+        [Route("api/employee")]
+        
+        public HttpResponseMessage PutEmployee(Guid id, Employee employee)
         {
             try
             {
@@ -176,9 +176,9 @@ namespace Day1.WebApi.Controllers
                     reader.Close();
                     SqlCommand commandUpdate = new SqlCommand("UPDATE EMPLOYEE SET FirstName=@firstName, LastName=@lastName, Birthday=@birthday WHERE Id=@Id;", connection);
                     commandUpdate.Parameters.AddWithValue("@Id", id);
-                    commandUpdate.Parameters.AddWithValue("@firstName", string.IsNullOrWhiteSpace(employee.FirstName)? currentEmp.FirstName : employee.FirstName);
-                    commandUpdate.Parameters.AddWithValue("@lastName", string.IsNullOrWhiteSpace(employee.LastName)? currentEmp.LastName : employee.LastName);
-                    commandUpdate.Parameters.AddWithValue("@birthday", Convert.ToDateTime(string.IsNullOrWhiteSpace(employee.Birthday.ToString())? currentEmp.Birthday : employee.Birthday));
+                    commandUpdate.Parameters.AddWithValue("@firstName", employee.FirstName == default ? currentEmp.FirstName : employee.FirstName);
+                    commandUpdate.Parameters.AddWithValue("@lastName", employee.LastName == default ? currentEmp.LastName : employee.LastName);
+                    commandUpdate.Parameters.AddWithValue("@birthday", employee.Birthday == default ? currentEmp.Birthday : employee.Birthday);
 
                     int numberOfAffectedRows = commandUpdate.ExecuteNonQuery();
                     if (numberOfAffectedRows > 0)
@@ -196,8 +196,9 @@ namespace Day1.WebApi.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Something went wrong, contact system admin!");
             }
         }
-    
+
         // DELETE api/values/5
+        [Route("api/employee/{id}")]
         public HttpResponseMessage Delete(Guid id)
         {
             try
@@ -208,7 +209,7 @@ namespace Day1.WebApi.Controllers
                 {
                     SqlCommand command = new SqlCommand("DELETE FROM EMPLOYEE WHERE Id=@Id", connection);
                     command.Parameters.AddWithValue("@Id", id);
-
+                    connection.Open();
                     int numberOfRowsAffected = command.ExecuteNonQuery();
 
                     if (numberOfRowsAffected > 0)
