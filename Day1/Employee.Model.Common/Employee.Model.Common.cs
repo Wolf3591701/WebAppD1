@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace Employee.Model.Common
 {
-    public class ModelCommon
+    public interface IEmployeeModel
     {
-
+        Guid Id { get; set; }
+        string FirstName { get; set; }
+        string LastName { get; set; }
+        DateTime Birthday { get; set; }
     }
 }

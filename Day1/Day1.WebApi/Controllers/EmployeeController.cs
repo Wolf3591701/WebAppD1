@@ -94,7 +94,6 @@ namespace Employees.WebApi.Controllers
                     {
                         return Request.CreateErrorResponse(HttpStatusCode.NotFound, $"No employee with ID: {id}");
                     }
-
                 }
             }
             catch (Exception)
@@ -164,6 +163,7 @@ namespace Employees.WebApi.Controllers
 
                     if (!reader.HasRows)
                     {
+                        reader.Close();
                         return Request.CreateErrorResponse(HttpStatusCode.NotFound, $"No employee with the given ID: {id} found for update!");
                     }
 
@@ -199,7 +199,7 @@ namespace Employees.WebApi.Controllers
 
         // DELETE api/values/5
         [Route("api/employee/{id}")]
-        public HttpResponseMessage Delete(Guid id)
+        public HttpResponseMessage DeleteEmployee(Guid id)
         {
             try
             {

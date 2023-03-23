@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Employee.Service.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Employee.Service
 {
-    public class EmployeeService
+    public class EmployeeService : IEmployeeService
     {
 
     }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Employee.Repository.Common
 {
-    public class EmployeeRepositoryCommon
+    public interface IEmployeeRepository
     {
 
     }

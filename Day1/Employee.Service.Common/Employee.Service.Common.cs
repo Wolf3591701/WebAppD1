@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Employee.Service.Common
 {
-    public class EmployeeServiceCommon
+    public interface IEmployeeService
     {
 
     }
