@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
 
@@ -16,10 +17,10 @@ namespace Employee.WebApi.Controllers
         IEmployeeService _employeeService = new EmployeeService();
 
         // GET api/employee
-        [Route("api/employee/GetAllEmployee")]
-        public HttpResponseMessage GetAllEmployee()
+        [Route("api/employee/GetAllEmployeeAsync")]
+        public async Task<HttpResponseMessage> GetAllEmployeeAsync()
         {
-            List<EmployeeModel> employees = _employeeService.GetAllEmployee();
+            List<EmployeeModel> employees = await _employeeService.GetAllEmployeeAsync();
             if (employees == null)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "No employee records found!");
@@ -34,9 +35,9 @@ namespace Employee.WebApi.Controllers
 
         [HttpGet]
         [Route("api/employee/{id}")]
-        public HttpResponseMessage GetEmployee(Guid id)
+        public async Task<HttpResponseMessage> GetEmployeeAsync(Guid id)
         {
-            EmployeeModel employee = _employeeService.GetEmployee(id);
+            EmployeeModel employee = await _employeeService.GetEmployeeAsync(id);
             if (employee == null)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "No employee records found!");
@@ -48,14 +49,14 @@ namespace Employee.WebApi.Controllers
 
         [HttpPost]
         [Route("api/employee/")]
-        public HttpResponseMessage PostEmployee(EmployeeModel employee)
+        public async Task<HttpResponseMessage> PostEmployeeAsync(EmployeeModel employee)
         {
             if (!ModelState.IsValid)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
             }
 
-            bool success = _employeeService.PostEmployee(employee);
+            bool success = await _employeeService.PostEmployeeAsync(employee);
             if (!success)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Employee addition failed!");
@@ -69,9 +70,9 @@ namespace Employee.WebApi.Controllers
         [HttpPut]
         [Route("api/employee")]
 
-        public HttpResponseMessage PutEmployee(Guid id, EmployeeModel employee)
+        public async Task<HttpResponseMessage> PutEmployeeAsync(Guid id, EmployeeModel employee)
         {
-            bool success = _employeeService.PutEmployee(id, employee);
+            bool success = await _employeeService.PutEmployeeAsync(id, employee);
             if (!success)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Employee records update failed!");
@@ -82,9 +83,9 @@ namespace Employee.WebApi.Controllers
 
         [HttpDelete]
         [Route("api/employee/{id}")]
-        public HttpResponseMessage DeleteEmployee(Guid id)
+        public async Task<HttpResponseMessage> DeleteEmployeeAsync(Guid id)
         {
-            bool success = _employeeService.DeleteEmployee(id);
+            bool success = await _employeeService.DeleteEmployeeAsync(id);
             if (!success)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Employee deletion failed!");

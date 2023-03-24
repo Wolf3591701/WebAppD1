@@ -9,10 +9,10 @@ namespace Employee.Repository.Common
 {
     public interface IEmployeeRepository
     {
-        List<EmployeeModel> GetAllEmployee();
-        EmployeeModel GetEmployee(Guid id);
-        bool PostEmployee(EmployeeModel employee);
-        bool PutEmployee(Guid id, EmployeeModel employee);
-        bool DeleteEmployee(Guid id);
+        Task<List<EmployeeModel>> GetAllEmployeeAsync();
+        Task<EmployeeModel> GetEmployeeAsync(Guid id);
+        Task<bool> PostEmployeeAsync(EmployeeModel employee);
+        Task<bool> PutEmployeeAsync(Guid id, EmployeeModel employee);
+        Task<bool> DeleteEmployeeAsync(Guid id);
     }
 }

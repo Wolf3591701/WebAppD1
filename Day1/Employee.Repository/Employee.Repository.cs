@@ -15,7 +15,7 @@ namespace Employee.Repository
     {
         static string connectionString = "Data Source=DESKTOP-DG2UJNT;Initial Catalog=RentCar;Integrated Security=True";
 
-        public List<EmployeeModel> GetAllEmployee()
+        public async Task<List<EmployeeModel>> GetAllEmployeeAsync()
         {
             SqlConnection connection = new SqlConnection(connectionString);
 
@@ -25,7 +25,7 @@ namespace Employee.Repository
 
                 connection.Open();
 
-                SqlDataReader reader = command.ExecuteReader();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
 
                 List<EmployeeModel> employees = new List<EmployeeModel>();
 
@@ -56,7 +56,7 @@ namespace Employee.Repository
         }
 
 
-        public EmployeeModel GetEmployee(Guid id)
+        public async Task<EmployeeModel> GetEmployeeAsync(Guid id)
         {
 
             try
@@ -71,7 +71,7 @@ namespace Employee.Repository
 
                     connection.Open();
 
-                    SqlDataReader reader = command.ExecuteReader();
+                    SqlDataReader reader = await command.ExecuteReaderAsync();
 
                     EmployeeModel emp = new EmployeeModel();
 
@@ -100,7 +100,7 @@ namespace Employee.Repository
         }
 
         
-        public bool PostEmployee(EmployeeModel employee)
+        public async Task<bool> PostEmployeeAsync(EmployeeModel employee)
         {
             try
             {
@@ -118,7 +118,7 @@ namespace Employee.Repository
 
                     connection.Open();
 
-                    int numberOfRowsAffected = command.ExecuteNonQuery();
+                    int numberOfRowsAffected = await command.ExecuteNonQueryAsync();
 
                     if (numberOfRowsAffected > 0)
                     {
@@ -137,7 +137,7 @@ namespace Employee.Repository
         }
 
 
-        public bool PutEmployee(Guid id, EmployeeModel employee)
+        public async Task<bool> PutEmployeeAsync(Guid id, EmployeeModel employee)
         {
             try
             {
@@ -151,7 +151,7 @@ namespace Employee.Repository
 
                     connection.Open();
 
-                    SqlDataReader reader = commandSelect.ExecuteReader();
+                    SqlDataReader reader = await commandSelect.ExecuteReaderAsync();
 
                     EmployeeModel currentEmp = new EmployeeModel();
 
@@ -191,7 +191,7 @@ namespace Employee.Repository
             }
         }
 
-        public bool DeleteEmployee(Guid id)
+        public async Task<bool> DeleteEmployeeAsync(Guid id)
         {
             try
             {
@@ -202,7 +202,7 @@ namespace Employee.Repository
                     SqlCommand command = new SqlCommand("DELETE FROM EMPLOYEE WHERE Id=@Id", connection);
                     command.Parameters.AddWithValue("@Id", id);
                     connection.Open();
-                    int numberOfRowsAffected = command.ExecuteNonQuery();
+                    int numberOfRowsAffected = await command.ExecuteNonQueryAsync();
 
                     if (numberOfRowsAffected > 0)
                     {
