@@ -166,8 +166,8 @@ namespace Employee.Repository
                     currentEmp.FirstName = reader.GetString(1);
                     currentEmp.LastName = reader.GetString(2);
                     currentEmp.Birthday = reader.GetDateTime(3);
-
                     reader.Close();
+
                     SqlCommand commandUpdate = new SqlCommand("UPDATE EMPLOYEE SET FirstName=@firstName, LastName=@lastName, Birthday=@birthday WHERE Id=@Id;", connection);
                     commandUpdate.Parameters.AddWithValue("@Id", id);
                     commandUpdate.Parameters.AddWithValue("@firstName", employee.FirstName);

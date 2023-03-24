@@ -43,6 +43,11 @@
   <ItemGroup>
     <Compile Include="Employee.Repository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RentCarDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RentCarDataSet.xsd</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Employee.Model\Employee.Model.csproj">
@@ -53,6 +58,19 @@
       <Project>{BA6C814D-27EF-491B-A4F9-6EF7397DF66B}</Project>
       <Name>Employee.Repository.Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="RentCarDataSet.xsc">
+      <DependentUpon>RentCarDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="RentCarDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>RentCarDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="RentCarDataSet.xss">
+      <DependentUpon>RentCarDataSet.xsd</DependentUpon>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

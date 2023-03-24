@@ -21,6 +21,7 @@ namespace Employee.WebApi.Controllers
         public async Task<HttpResponseMessage> GetAllEmployeeAsync()
         {
             List<EmployeeModel> employees = await _employeeService.GetAllEmployeeAsync();
+
             if (employees == null)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "No employee records found!");
@@ -68,7 +69,7 @@ namespace Employee.WebApi.Controllers
 
 
         [HttpPut]
-        [Route("api/employee")]
+        [Route("api/employee/{id}")]
 
         public async Task<HttpResponseMessage> PutEmployeeAsync(Guid id, EmployeeModel employee)
         {

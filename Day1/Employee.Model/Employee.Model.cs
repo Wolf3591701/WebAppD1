@@ -11,13 +11,11 @@ namespace Employee.Model
 {
     public class EmployeeModel : IEmployeeModel
     {
-        [Required]
+        
         public Guid Id { get; set; }
-        [Required]
+        
         public string FirstName { get; set; }
-        [Required]
         public string LastName { get; set; }
-        [Required]
         public DateTime Birthday { get; set; }
     }
 }

@@ -8,5 +8,7 @@ namespace Employee.WebApi.Models
 {
     public class EmployeeView
     {
+        string FirstName { get; set; }
+        string LastName { get; set; }
     }
 }
