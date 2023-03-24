@@ -45,6 +45,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Employee.Model\Employee.Model.csproj">
+      <Project>{428857F3-EDF6-4B80-9055-9A87FC76DEC0}</Project>
+      <Name>Employee.Model</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Employee.Repository.Common\Employee.Repository.Common.csproj">
       <Project>{BA6C814D-27EF-491B-A4F9-6EF7397DF66B}</Project>
       <Name>Employee.Repository.Common</Name>

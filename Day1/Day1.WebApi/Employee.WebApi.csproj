@@ -302,6 +302,20 @@
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Employee.Model\Employee.Model.csproj">
+      <Project>{428857F3-EDF6-4B80-9055-9A87FC76DEC0}</Project>
+      <Name>Employee.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Employee.Service.Common\Employee.Service.Common.csproj">
+      <Project>{629614CB-F7B4-4534-A917-991D2C8B637B}</Project>
+      <Name>Employee.Service.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Employee.Service\Employee.Service.csproj">
+      <Project>{63615336-E651-474D-8E4C-A5E943364263}</Project>
+      <Name>Employee.Service</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

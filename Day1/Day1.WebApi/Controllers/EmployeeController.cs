@@ -1,233 +1,101 @@
-﻿using System;
+﻿using Employee.Model;
+using Employee.Service;
+using Employee.Service.Common;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.Remoting.Messaging;
 using System.Web.Http;
+using System.Web.Http.ModelBinding;
 
-namespace Employees.WebApi.Controllers
+namespace Employee.WebApi.Controllers
 {
     public class EmployeeController : ApiController
     {
-        static string connectionString = "Data Source=DESKTOP-DG2UJNT;Initial Catalog=RentCar;Integrated Security=True";
+        public static string connectionString = "Data Source=DESKTOP-DG2UJNT;Initial Catalog=RentCar;Integrated Security=True";
+        IEmployeeService _employeeService = new EmployeeService();
 
         // GET api/employee
         [Route("api/employee/GetAllEmployee")]
         public HttpResponseMessage GetAllEmployee()
         {
-            SqlConnection connection = new SqlConnection(connectionString);
-
-            using (connection)
+            List<EmployeeModel> employees = _employeeService.GetAllEmployee();
+            if (employees == null)
             {
-                SqlCommand command = new SqlCommand("SELECT * FROM EMPLOYEE;", connection);
-
-                connection.Open();
-
-                SqlDataReader reader = command.ExecuteReader();
-
-                List<Employee> list = new List<Employee>();
-
-                while (reader.Read())
-                {
-                    Employee emp = new Employee();
-
-                    emp.Id = reader.GetGuid(0);
-                    emp.FirstName = reader.GetString(1);
-                    emp.LastName = reader.GetString(2);
-                    emp.Birthday = reader.GetDateTime(3);
-
-                    list.Add(emp);
-                }
-
-
-
-                if (reader.HasRows)
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, list);
-                }
-                else
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "No employee records found!");
-                }
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "No employee records found!");
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, employees);
             }
         }
+    
 
 
-        // GET api/employee
+        [HttpGet]
         [Route("api/employee/{id}")]
         public HttpResponseMessage GetEmployee(Guid id)
         {
-
-            try
+            EmployeeModel employee = _employeeService.GetEmployee(id);
+            if (employee == null)
             {
-                SqlConnection connection = new SqlConnection(connectionString);
-
-                using (connection)
-                {
-                    SqlCommand command = new SqlCommand("SELECT * FROM EMPLOYEE WHERE Id=@Id;", connection);
-
-                    command.Parameters.AddWithValue("@id", id);
-
-                    connection.Open();
-
-                    SqlDataReader reader = command.ExecuteReader();
-
-                    Employee emp = new Employee();
-
-                    if (reader.HasRows)
-                    {
-                        reader.Read();
-                        emp.Id = reader.GetGuid(0);
-                        emp.FirstName = reader.GetString(1);
-                        emp.LastName = reader.GetString(2);
-                        emp.Birthday = reader.GetDateTime(3);
-
-                        connection.Close();
-                        return Request.CreateResponse(HttpStatusCode.OK, emp);
-                    }
-
-                    else
-                    {
-                        return Request.CreateErrorResponse(HttpStatusCode.NotFound, $"No employee with ID: {id}");
-                    }
-                }
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "No employee records found!");
             }
-            catch (Exception)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Something went wrong, contact system admin!");
-            }
+
+            return Request.CreateResponse(HttpStatusCode.OK, employee);
+           
         }
 
-        // POST api/employee
+        [HttpPost]
         [Route("api/employee/")]
-        public HttpResponseMessage PostEmployee(Employee employee)
+        public HttpResponseMessage PostEmployee(EmployeeModel employee)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                SqlConnection connection = new SqlConnection(connectionString);
-
-                using (connection)
-                {
-                    SqlCommand command = new SqlCommand("INSERT INTO EMPLOYEE VALUES (@Id,@FirstName,@LastName,@Birthday);", connection);
-
-                    employee.Id = Guid.NewGuid();
-                    command.Parameters.AddWithValue("@Id", employee.Id);
-                    command.Parameters.AddWithValue("@FirstName", employee.FirstName);
-                    command.Parameters.AddWithValue("@Lastname", employee.LastName);
-                    command.Parameters.AddWithValue("@Birthday", employee.Birthday);
-
-                    connection.Open();
-
-                    int numberOfRowsAffected = command.ExecuteNonQuery();
-
-                    if (numberOfRowsAffected > 0)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, "Employee successfully added!");
-                    }
-                    else
-                    {
-                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Employee entry failed!");
-                    }
-                }
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
             }
-            catch (Exception)
+
+            bool success = _employeeService.PostEmployee(employee);
+            if (!success)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Something went wrong, contact system admin!");
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Employee addition failed!");
             }
+
+            return Request.CreateResponse(HttpStatusCode.OK, "Employee successfully added!");
         }
 
-        // PUT api/employee
+
+
+        [HttpPut]
         [Route("api/employee")]
-        
-        public HttpResponseMessage PutEmployee(Guid id, Employee employee)
+
+        public HttpResponseMessage PutEmployee(Guid id, EmployeeModel employee)
         {
-            try
+            bool success = _employeeService.PutEmployee(id, employee);
+            if (!success)
             {
-                SqlConnection connection = new SqlConnection(connectionString);
-
-                using (connection)
-                {
-                    SqlCommand commandSelect = new SqlCommand("SELECT * FROM EMPLOYEE WHERE Id=@Id;", connection);
-
-                    commandSelect.Parameters.AddWithValue("@id", id);
-
-                    connection.Open();
-
-                    SqlDataReader reader = commandSelect.ExecuteReader();
-
-                    Employee currentEmp = new Employee();
-
-                    if (!reader.HasRows)
-                    {
-                        reader.Close();
-                        return Request.CreateErrorResponse(HttpStatusCode.NotFound, $"No employee with the given ID: {id} found for update!");
-                    }
-
-                    reader.Read();
-                    currentEmp.Id = reader.GetGuid(0);
-                    currentEmp.FirstName = reader.GetString(1);
-                    currentEmp.LastName = reader.GetString(2);
-                    currentEmp.Birthday = reader.GetDateTime(3);
-
-                    reader.Close();
-                    SqlCommand commandUpdate = new SqlCommand("UPDATE EMPLOYEE SET FirstName=@firstName, LastName=@lastName, Birthday=@birthday WHERE Id=@Id;", connection);
-                    commandUpdate.Parameters.AddWithValue("@Id", id);
-                    commandUpdate.Parameters.AddWithValue("@firstName", employee.FirstName == default ? currentEmp.FirstName : employee.FirstName);
-                    commandUpdate.Parameters.AddWithValue("@lastName", employee.LastName == default ? currentEmp.LastName : employee.LastName);
-                    commandUpdate.Parameters.AddWithValue("@birthday", employee.Birthday == default ? currentEmp.Birthday : employee.Birthday);
-
-                    int numberOfAffectedRows = commandUpdate.ExecuteNonQuery();
-                    if (numberOfAffectedRows > 0)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, employee);
-                    }
-                    else
-                    {
-                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, $"Error updating employee with an Id: {id}");
-                    }
-                }
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Employee records update failed!");
             }
-            catch (Exception)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Something went wrong, contact system admin!");
-            }
+
+            return Request.CreateResponse(HttpStatusCode.OK, "Employee successfully updated!");
         }
 
-        // DELETE api/values/5
+        [HttpDelete]
         [Route("api/employee/{id}")]
         public HttpResponseMessage DeleteEmployee(Guid id)
         {
-            try
+            bool success = _employeeService.DeleteEmployee(id);
+            if (!success)
             {
-                SqlConnection connection = new SqlConnection(connectionString);
-
-                using (connection)
-                {
-                    SqlCommand command = new SqlCommand("DELETE FROM EMPLOYEE WHERE Id=@Id", connection);
-                    command.Parameters.AddWithValue("@Id", id);
-                    connection.Open();
-                    int numberOfRowsAffected = command.ExecuteNonQuery();
-
-                    if (numberOfRowsAffected > 0)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, "Employee successfully deleted!");
-                    }
-                    else
-                    {
-                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, $"Employee ID: {id} deletion failed!");
-                    }
-                }
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Employee deletion failed!");
             }
-            catch (Exception)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Something went wrong, contact system admin!");
-            }
+
+            return Request.CreateResponse(HttpStatusCode.OK, "Employee successfully deleted!");
         }
+        
     }
 }
+
+
 
 
