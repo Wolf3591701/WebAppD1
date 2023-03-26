@@ -1,232 +1,138 @@
-﻿using System;
+﻿using Employee.Model;
+using Employee.Service;
+using Employee.Service.Common;
+using Employee.WebApi.Models;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.Remoting.Messaging;
+using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.ModelBinding;
 
-namespace Day1.WebApi.Controllers
+namespace Employee.WebApi.Controllers
 {
     public class EmployeeController : ApiController
     {
-        static string connectionString = "Data Source=DESKTOP-DG2UJNT;Initial Catalog=RentCar;Integrated Security=True";
+        public static string connectionString = "Data Source=DESKTOP-DG2UJNT;Initial Catalog=RentCar;Integrated Security=True";
+        IEmployeeService _employeeService = new EmployeeService();
 
-        // GET api/values
-        [Route("api/values/GetAllEmployee")]
-        public HttpResponseMessage GetAllEmployee()
+        // GET api/employee
+        [Route("api/employee/GetAllEmployeeAsync")]
+        public async Task<HttpResponseMessage> GetAllEmployeeAsync()
         {
-            SqlConnection connection = new SqlConnection(connectionString);
+            List<EmployeeModel> employees = await _employeeService.GetAllEmployeeAsync();
 
-            using (connection)
+            List<EmployeeRest> employeesRest = new List<EmployeeRest>();
+
+            if (employees == null)
             {
-                SqlCommand command = new SqlCommand("SELECT * FROM EMPLOYEE;", connection);
-
-                connection.Open();
-
-                SqlDataReader reader = command.ExecuteReader();
-
-                List<Employee> list = new List<Employee>();
-
-                while (reader.Read())
-                {
-                    Employee emp = new Employee();
-
-                    emp.Id = reader.GetGuid(0);
-                    emp.FirstName = reader.GetString(1);
-                    emp.LastName = reader.GetString(2);
-                    emp.Birthday = reader.GetDateTime(3);
-
-                    connection.Close();
-                    list.Add(emp);
-
-                }
-
-                if (reader.HasRows)
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, list);
-                }
-                else
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "No employee records found!");
-                }
-
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "No employee records found!");
             }
-        }
 
-
-        // GET api/values
-        [Route("api/values/GetEmployeeId/{id}")]
-        public HttpResponseMessage GetEmployeeId(Guid id)
-        {
-
-            try
+            foreach (EmployeeModel employee in employees)
             {
-                SqlConnection connection = new SqlConnection(connectionString);
+                EmployeeRest employeeRest = new EmployeeRest();
+                employeeRest.FirstName = employee.FirstName;
+                employeeRest.LastName = employee.LastName;
 
-                using (connection)
-                {
-                    SqlCommand command = new SqlCommand("SELECT * FROM EMPLOYEE WHERE Id=@Id;", connection);
-
-                    command.Parameters.AddWithValue("@id", id);
-
-                    connection.Open();
-
-                    SqlDataReader reader = command.ExecuteReader();
-
-                    Employee emp = new Employee();
-
-                    if (reader.HasRows)
-                    {
-                        reader.Read();
-                        emp.Id = reader.GetGuid(0);
-                        emp.FirstName = reader.GetString(1);
-                        emp.LastName = reader.GetString(2);
-                        emp.Birthday = reader.GetDateTime(3);
-
-                        connection.Close();
-                        return Request.CreateResponse(HttpStatusCode.OK, emp);
-                    }
-
-                    else
-                    {
-                        return Request.CreateErrorResponse(HttpStatusCode.NotFound, $"No employee with ID: {id}");
-                    }
-
-                }
+                employeesRest.Add(employeeRest);
             }
-            catch (Exception)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Something went wrong, contact system admin!");
-            }
-        }
-
-        // POST api/values
-        [Route("api/values/PostEmployee")]
-        public HttpResponseMessage PostEmployee(Employee employee)
-        {
-            try
-            {
-                SqlConnection connection = new SqlConnection(connectionString);
-
-                using (connection)
-                {
-                    SqlCommand command = new SqlCommand("INSERT INTO EMPLOYEE VALUES (@Id,@FirstName,@LastName,@Birthday);", connection);
-
-                    employee.Id = Guid.NewGuid();
-                    command.Parameters.AddWithValue("@Id", employee.Id);
-                    command.Parameters.AddWithValue("@FirstName", employee.FirstName);
-                    command.Parameters.AddWithValue("@Lastname", employee.LastName);
-                    command.Parameters.AddWithValue("@Birthday", employee.Birthday);
-
-                    connection.Open();
-
-                    int numberOfRowsAffected = command.ExecuteNonQuery();
-
-                    if (numberOfRowsAffected > 0)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, "Employee successfully added!");
-                    }
-                    else
-                    {
-                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Employee entry failed!");
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Something went wrong, contact system admin!");
-            }
-        }
-
-        // PUT api/values/5
-        [Route("api/values/PutEmployee")]
-        public HttpResponseMessage Put(Guid id, Employee employee)
-        {
-            try
-            {
-                SqlConnection connection = new SqlConnection(connectionString);
-
-                using (connection)
-                {
-                    SqlCommand commandSelect = new SqlCommand("SELECT * FROM EMPLOYEE WHERE Id=@Id;", connection);
-
-                    commandSelect.Parameters.AddWithValue("@id", id);
-
-                    connection.Open();
-
-                    SqlDataReader reader = commandSelect.ExecuteReader();
-
-                    Employee currentEmp = new Employee();
-
-                    if (!reader.HasRows)
-                    {
-                        return Request.CreateErrorResponse(HttpStatusCode.NotFound, $"No employee with the given ID: {id} found for update!");
-                    }
-
-                    reader.Read();
-                    currentEmp.Id = reader.GetGuid(0);
-                    currentEmp.FirstName = reader.GetString(1);
-                    currentEmp.LastName = reader.GetString(2);
-                    currentEmp.Birthday = reader.GetDateTime(3);
-
-                    reader.Close();
-                    SqlCommand commandUpdate = new SqlCommand("UPDATE EMPLOYEE SET FirstName=@firstName, LastName=@lastName, Birthday=@birthday WHERE Id=@Id;", connection);
-                    commandUpdate.Parameters.AddWithValue("@Id", id);
-                    commandUpdate.Parameters.AddWithValue("@firstName", string.IsNullOrWhiteSpace(employee.FirstName)? currentEmp.FirstName : employee.FirstName);
-                    commandUpdate.Parameters.AddWithValue("@lastName", string.IsNullOrWhiteSpace(employee.LastName)? currentEmp.LastName : employee.LastName);
-                    commandUpdate.Parameters.AddWithValue("@birthday", Convert.ToDateTime(string.IsNullOrWhiteSpace(employee.Birthday.ToString())? currentEmp.Birthday : employee.Birthday));
-
-                    int numberOfAffectedRows = commandUpdate.ExecuteNonQuery();
-                    if (numberOfAffectedRows > 0)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, employee);
-                    }
-                    else
-                    {
-                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, $"Error updating employee with an Id: {id}");
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Something went wrong, contact system admin!");
-            }
+            return Request.CreateResponse(HttpStatusCode.OK, employees);
+            
         }
     
-        // DELETE api/values/5
-        public HttpResponseMessage Delete(Guid id)
+
+
+        [HttpGet]
+        [Route("api/employee/{id}")]
+        public async Task<HttpResponseMessage> GetEmployeeAsync(Guid id)
         {
-            try
+            EmployeeModel employee = await _employeeService.GetEmployeeAsync(id);
+            if (employee == null)
             {
-                SqlConnection connection = new SqlConnection(connectionString);
-
-                using (connection)
-                {
-                    SqlCommand command = new SqlCommand("DELETE FROM EMPLOYEE WHERE Id=@Id", connection);
-                    command.Parameters.AddWithValue("@Id", id);
-
-                    int numberOfRowsAffected = command.ExecuteNonQuery();
-
-                    if (numberOfRowsAffected > 0)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, "Employee successfully deleted!");
-                    }
-                    else
-                    {
-                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, $"Employee ID: {id} deletion failed!");
-                    }
-                }
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "No employee records found!");
             }
-            catch (Exception)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Something went wrong, contact system admin!");
-            }
+
+            EmployeeRest employeeRest = new EmployeeRest();
+            employeeRest.FirstName = employee.FirstName;
+            employeeRest.LastName = employee.LastName;
+            return Request.CreateResponse(HttpStatusCode.OK, employeeRest);
         }
+
+        [HttpPost]
+        [Route("api/employee/")]
+        public async Task<HttpResponseMessage> PostEmployeeAsync(EmployeeModelPostRest employeeRest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+            }
+
+            EmployeeModel employeeModel = new EmployeeModel();
+            employeeModel.FirstName = employeeRest.FirstName;
+            employeeModel.LastName = employeeRest.LastName;
+
+            bool success = await _employeeService.PostEmployeeAsync(employeeModel);
+            if (!success)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Employee addition failed!");
+            }
+
+            return Request.CreateResponse(HttpStatusCode.OK, "Employee successfully added!");
+        }
+
+
+
+        [HttpPut]
+        [Route("api/employee/{id}")]
+
+        public async Task<HttpResponseMessage> PutEmployeeAsync(Guid id, EmployeeModelPutRest employeeRest)
+        {
+            EmployeeModel employeeModel = new EmployeeModel();
+            employeeModel.FirstName = employeeRest.FirstName;
+            employeeModel.LastName = employeeRest.LastName;
+
+            bool success = await _employeeService.PutEmployeeAsync(id, employeeModel);
+            if (!success)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Employee records update failed!");
+            }
+
+            return Request.CreateResponse(HttpStatusCode.OK, "Employee successfully updated!");
+        }
+
+        [HttpDelete]
+        [Route("api/employee/{id}")]
+        public async Task<HttpResponseMessage> DeleteEmployeeAsync(Guid id)
+        {
+            bool success = await _employeeService.DeleteEmployeeAsync(id);
+            if (!success)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Employee deletion failed!");
+            }
+
+            return Request.CreateResponse(HttpStatusCode.OK, "Employee successfully deleted!");
+        }
+
+        public class EmployeeModelPostRest
+        {
+            [Required(ErrorMessage = "First name is required!")]
+            public string FirstName { get; set; }
+            [Required(ErrorMessage ="Last name is required!")]
+            public string LastName { get; set; }
+        }
+
+        public class EmployeeModelPutRest
+        {
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+        }
+        
     }
 }
+
+
 
 

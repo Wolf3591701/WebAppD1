@@ -153,14 +153,12 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\MovieController.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Employee.cs" />
-    <Compile Include="Models\Movie.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -303,6 +301,24 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Employee.Model\Employee.Model.csproj">
+      <Project>{428857F3-EDF6-4B80-9055-9A87FC76DEC0}</Project>
+      <Name>Employee.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Employee.Service.Common\Employee.Service.Common.csproj">
+      <Project>{629614CB-F7B4-4534-A917-991D2C8B637B}</Project>
+      <Name>Employee.Service.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Employee.Service\Employee.Service.csproj">
+      <Project>{63615336-E651-474D-8E4C-A5E943364263}</Project>
+      <Name>Employee.Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Employee.WebApi.Models\Employee.WebApi.Models.csproj">
+      <Project>{B4CBFF38-20FE-4BB0-866D-99A485B78128}</Project>
+      <Name>Employee.WebApi.Models</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
