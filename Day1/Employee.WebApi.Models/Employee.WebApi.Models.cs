@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Employee.WebApi.Models
 {
-    public class EmployeeView
+    public class EmployeeRest
     {
-        string FirstName { get; set; }
-        string LastName { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
     }
 }

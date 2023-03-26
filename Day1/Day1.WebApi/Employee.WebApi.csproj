@@ -315,6 +315,10 @@
       <Project>{63615336-E651-474D-8E4C-A5E943364263}</Project>
       <Name>Employee.Service</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Employee.WebApi.Models\Employee.WebApi.Models.csproj">
+      <Project>{B4CBFF38-20FE-4BB0-866D-99A485B78128}</Project>
+      <Name>Employee.WebApi.Models</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

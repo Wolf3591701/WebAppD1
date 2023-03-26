@@ -1,8 +1,10 @@
 ﻿using Employee.Model;
 using Employee.Service;
 using Employee.Service.Common;
+using Employee.WebApi.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -22,14 +24,23 @@ namespace Employee.WebApi.Controllers
         {
             List<EmployeeModel> employees = await _employeeService.GetAllEmployeeAsync();
 
+            List<EmployeeRest> employeesRest = new List<EmployeeRest>();
+
             if (employees == null)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "No employee records found!");
             }
-            else
+
+            foreach (EmployeeModel employee in employees)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, employees);
+                EmployeeRest employeeRest = new EmployeeRest();
+                employeeRest.FirstName = employee.FirstName;
+                employeeRest.LastName = employee.LastName;
+
+                employeesRest.Add(employeeRest);
             }
+            return Request.CreateResponse(HttpStatusCode.OK, employees);
+            
         }
     
 
@@ -44,20 +55,26 @@ namespace Employee.WebApi.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "No employee records found!");
             }
 
-            return Request.CreateResponse(HttpStatusCode.OK, employee);
-           
+            EmployeeRest employeeRest = new EmployeeRest();
+            employeeRest.FirstName = employee.FirstName;
+            employeeRest.LastName = employee.LastName;
+            return Request.CreateResponse(HttpStatusCode.OK, employeeRest);
         }
 
         [HttpPost]
         [Route("api/employee/")]
-        public async Task<HttpResponseMessage> PostEmployeeAsync(EmployeeModel employee)
+        public async Task<HttpResponseMessage> PostEmployeeAsync(EmployeeModelPostRest employeeRest)
         {
             if (!ModelState.IsValid)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
             }
 
-            bool success = await _employeeService.PostEmployeeAsync(employee);
+            EmployeeModel employeeModel = new EmployeeModel();
+            employeeModel.FirstName = employeeRest.FirstName;
+            employeeModel.LastName = employeeRest.LastName;
+
+            bool success = await _employeeService.PostEmployeeAsync(employeeModel);
             if (!success)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Employee addition failed!");
@@ -71,9 +88,13 @@ namespace Employee.WebApi.Controllers
         [HttpPut]
         [Route("api/employee/{id}")]
 
-        public async Task<HttpResponseMessage> PutEmployeeAsync(Guid id, EmployeeModel employee)
+        public async Task<HttpResponseMessage> PutEmployeeAsync(Guid id, EmployeeModelPutRest employeeRest)
         {
-            bool success = await _employeeService.PutEmployeeAsync(id, employee);
+            EmployeeModel employeeModel = new EmployeeModel();
+            employeeModel.FirstName = employeeRest.FirstName;
+            employeeModel.LastName = employeeRest.LastName;
+
+            bool success = await _employeeService.PutEmployeeAsync(id, employeeModel);
             if (!success)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Employee records update failed!");
@@ -93,6 +114,20 @@ namespace Employee.WebApi.Controllers
             }
 
             return Request.CreateResponse(HttpStatusCode.OK, "Employee successfully deleted!");
+        }
+
+        public class EmployeeModelPostRest
+        {
+            [Required(ErrorMessage = "First name is required!")]
+            public string FirstName { get; set; }
+            [Required(ErrorMessage ="Last name is required!")]
+            public string LastName { get; set; }
+        }
+
+        public class EmployeeModelPutRest
+        {
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
         }
         
     }
