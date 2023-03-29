@@ -1,4 +1,4 @@
-namespace Day1.WebApi.Areas.HelpPage.ModelDescriptions
+namespace Employee.WebApi.Areas.HelpPage.ModelDescriptions
 {
     public class KeyValuePairModelDescription : ModelDescription
     {

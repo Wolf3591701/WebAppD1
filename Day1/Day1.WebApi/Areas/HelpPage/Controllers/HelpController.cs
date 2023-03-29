@@ -1,10 +1,10 @@
 using System;
 using System.Web.Http;
 using System.Web.Mvc;
-using Day1.WebApi.Areas.HelpPage.ModelDescriptions;
-using Day1.WebApi.Areas.HelpPage.Models;
+using Employee.WebApi.Areas.HelpPage.ModelDescriptions;
+using Employee.WebApi.Areas.HelpPage.Models;
 
-namespace Day1.WebApi.Areas.HelpPage.Controllers
+namespace Employee.WebApi.Areas.HelpPage.Controllers
 {
     /// <summary>
     /// The controller that will handle requests for the help page.

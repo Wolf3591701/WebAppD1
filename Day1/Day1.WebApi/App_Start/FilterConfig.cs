@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Mvc;
 
-namespace Day1.WebApi
+namespace Employee.WebApi
 {
     public class FilterConfig
     {

@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Optimization;
 
-namespace Day1.WebApi
+namespace Employee.WebApi
 {
     public class BundleConfig
     {

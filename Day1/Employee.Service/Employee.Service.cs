@@ -12,29 +12,35 @@ namespace Employee.Service
 {
     public class EmployeeService : IEmployeeService
     {
-        IEmployeeRepository _employeeRepository = new EmployeeRepository();
+        //IEmployeeRepository _employeeRepository = new EmployeeRepository();
+        protected IEmployeeRepository EmployeeRepository { get; set; }
+
+        public EmployeeService(IEmployeeRepository employeeRepository)
+        {
+            EmployeeRepository = employeeRepository;
+        }
 
         public async Task<List<EmployeeModel>> GetAllEmployeeAsync()
         {
-            List<EmployeeModel> employees = await _employeeRepository.GetAllEmployeeAsync();
+            List<EmployeeModel> employees = await EmployeeRepository.GetAllEmployeeAsync();
             return employees;
         }
 
         public async Task<EmployeeModel> GetEmployeeAsync(Guid id)
         {
-            EmployeeModel employeeModel =await _employeeRepository.GetEmployeeAsync(id);
+            EmployeeModel employeeModel =await EmployeeRepository.GetEmployeeAsync(id);
             return employeeModel;
         }
 
         public async Task<bool> PostEmployeeAsync(EmployeeModel employee)
         {
-            bool success = await _employeeRepository.PostEmployeeAsync(employee);
+            bool success = await EmployeeRepository.PostEmployeeAsync(employee);
             return success;
         }
 
         public async Task<bool> PutEmployeeAsync(Guid id, EmployeeModel employee)
         {
-            EmployeeModel currentEmp = await _employeeRepository.GetEmployeeAsync(id);
+            EmployeeModel currentEmp = await EmployeeRepository.GetEmployeeAsync(id);
             if (currentEmp == null) 
             {
                 return false;
@@ -47,13 +53,13 @@ namespace Employee.Service
                 Birthday = employee.Birthday == default ? currentEmp.Birthday : employee.Birthday
             };
 
-            bool success = await _employeeRepository.PutEmployeeAsync(id, employeeToUpdate);
+            bool success = await EmployeeRepository.PutEmployeeAsync(id, employeeToUpdate);
             return success;
         }
 
         public async Task<bool> DeleteEmployeeAsync(Guid id)
         {
-            bool success = await _employeeRepository.DeleteEmployeeAsync(id);
+            bool success = await EmployeeRepository.DeleteEmployeeAsync(id);
             return success;
         }
     }
