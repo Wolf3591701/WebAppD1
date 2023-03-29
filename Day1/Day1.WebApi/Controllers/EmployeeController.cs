@@ -1,4 +1,5 @@
-﻿using Employee.Model;
+﻿using Employee.Common;
+using Employee.Model;
 using Employee.Service;
 using Employee.Service.Common;
 using Employee.WebApi.Models;
@@ -26,9 +27,9 @@ namespace Employee.WebApi.Controllers
 
         // GET api/employee
         [Route("api/employee/GetAllEmployeeAsync")]
-        public async Task<HttpResponseMessage> GetAllEmployeeAsync()
+        public async Task<HttpResponseMessage> GetAllEmployeeAsync([FromUri] Paging paging)
         {
-            List<EmployeeModel> employees = await EmployeeService.GetAllEmployeeAsync();
+            List<EmployeeModel> employees = await EmployeeService.GetAllEmployeeAsync(paging);
 
             List<EmployeeRest> employeesRest = new List<EmployeeRest>();
 

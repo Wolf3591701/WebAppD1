@@ -1,13 +1,11 @@
-﻿using Employee.Repository.Common;
+﻿using Employee.Common;
+using Employee.Model;
+using Employee.Repository.Common;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Net.Http;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Employee.Model;
 
 namespace Employee.Repository
 {
@@ -15,46 +13,64 @@ namespace Employee.Repository
     {
         static string connectionString = "Data Source=DESKTOP-DG2UJNT;Initial Catalog=RentCar;Integrated Security=True";
 
-        public async Task<List<EmployeeModel>> GetAllEmployeeAsync()
+        public async Task<List<EmployeeModel>> GetAllEmployeeAsync(Paging paging)
         {
-            SqlConnection connection = new SqlConnection(connectionString);
-
-            using (connection)
+            try
             {
-                SqlCommand command = new SqlCommand("SELECT * FROM EMPLOYEE;", connection);
+                SqlConnection connection = new SqlConnection(connectionString);
 
-                connection.Open();
-
-                SqlDataReader reader = await command.ExecuteReaderAsync();
-
-                List<EmployeeModel> employees = new List<EmployeeModel>();
-
-                while (reader.Read())
+                using (connection)
                 {
-                    EmployeeModel emp = new EmployeeModel();
+                    StringBuilder queryString = new StringBuilder();
+                    queryString.AppendLine("SELECT * FROM EMPLOYEE ");
 
-                    emp.Id = reader.GetGuid(0);
-                    emp.FirstName = reader.GetString(1);
-                    emp.LastName = reader.GetString(2);
-                    emp.Birthday = reader.GetDateTime(3);
+                    if (paging != null)
+                    {
+                        queryString.AppendLine("ORDER BY Id OFFSET (@pageNumber -1) * @pageSize ROWS FETCH NEXT @pageSize ROWS ONLY;");
+                    }
 
-                    employees.Add(emp);
-                }
+                    SqlCommand command = new SqlCommand(queryString.ToString(), connection);
+                    command.Parameters.AddWithValue("@pageNumber", paging.PageNumber);
+                    command.Parameters.AddWithValue("@pageSize", paging.PageSize);
+
+                    //SqlCommand command = new SqlCommand("SELECT * FROM EMPLOYEE;", connection);
+
+                    connection.Open();
+
+                    SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                    List<EmployeeModel> employees = new List<EmployeeModel>();
+
+                    while (reader.Read())
+                    {
+                        EmployeeModel emp = new EmployeeModel();
+
+                        emp.Id = reader.GetGuid(0);
+                        emp.FirstName = reader.GetString(1);
+                        emp.LastName = reader.GetString(2);
+                        emp.Birthday = reader.GetDateTime(3);
+
+                        employees.Add(emp);
+                    }
 
 
 
-                if (reader.HasRows)
-                {
-                    reader.Close();
-                    return employees;
-                }
-                else
-                {
-                    return null;
+                    if (reader.HasRows)
+                    {
+                        reader.Close();
+                        return employees;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
             }
+            catch (Exception)
+            {
+                return null;
+            }
         }
-
 
         public async Task<EmployeeModel> GetEmployeeAsync(Guid id)
         {
@@ -99,7 +115,7 @@ namespace Employee.Repository
             }
         }
 
-        
+
         public async Task<bool> PostEmployeeAsync(EmployeeModel employee)
         {
             try
@@ -219,5 +235,5 @@ namespace Employee.Repository
                 return false;
             }
         }
+        }
     }
-}

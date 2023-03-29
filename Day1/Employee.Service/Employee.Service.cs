@@ -1,4 +1,5 @@
-﻿using Employee.Model;
+﻿using Employee.Common;
+using Employee.Model;
 using Employee.Repository;
 using Employee.Repository.Common;
 using Employee.Service.Common;
@@ -20,9 +21,9 @@ namespace Employee.Service
             EmployeeRepository = employeeRepository;
         }
 
-        public async Task<List<EmployeeModel>> GetAllEmployeeAsync()
+        public async Task<List<EmployeeModel>> GetAllEmployeeAsync(Paging paging)
         {
-            List<EmployeeModel> employees = await EmployeeRepository.GetAllEmployeeAsync();
+            List<EmployeeModel> employees = await EmployeeRepository.GetAllEmployeeAsync(paging);
             return employees;
         }
 
