@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Employee.Common.Sorting
+namespace Employee.Common
 {
-    internal class Sorting
+    public class Sorting
     {
+        public string OrderBy { get; set; }
     }
 }

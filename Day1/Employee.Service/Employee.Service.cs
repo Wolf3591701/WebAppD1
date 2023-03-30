@@ -21,9 +21,9 @@ namespace Employee.Service
             EmployeeRepository = employeeRepository;
         }
 
-        public async Task<List<EmployeeModel>> GetAllEmployeeAsync(Paging paging)
+        public async Task<List<EmployeeModel>> GetAllEmployeeAsync(Paging paging, Sorting sorting)
         {
-            List<EmployeeModel> employees = await EmployeeRepository.GetAllEmployeeAsync(paging);
+            List<EmployeeModel> employees = await EmployeeRepository.GetAllEmployeeAsync(paging, sorting);
             return employees;
         }
 

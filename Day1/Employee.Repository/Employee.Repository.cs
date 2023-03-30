@@ -13,7 +13,7 @@ namespace Employee.Repository
     {
         static string connectionString = "Data Source=DESKTOP-DG2UJNT;Initial Catalog=RentCar;Integrated Security=True";
 
-        public async Task<List<EmployeeModel>> GetAllEmployeeAsync(Paging paging)
+        public async Task<List<EmployeeModel>> GetAllEmployeeAsync(Paging paging, Sorting sorting)
         {
             try
             {
@@ -24,9 +24,14 @@ namespace Employee.Repository
                     StringBuilder queryString = new StringBuilder();
                     queryString.AppendLine("SELECT * FROM EMPLOYEE ");
 
+                    if (sorting != null)
+                    {
+                        queryString.AppendLine($"ORDER BY {sorting.OrderBy} ");
+                    }
+
                     if (paging != null)
                     {
-                        queryString.AppendLine("ORDER BY Id OFFSET (@pageNumber -1) * @pageSize ROWS FETCH NEXT @pageSize ROWS ONLY;");
+                        queryString.AppendLine("OFFSET (@pageNumber -1) * @pageSize ROWS FETCH NEXT @pageSize ROWS ONLY;");
                     }
 
                     SqlCommand command = new SqlCommand(queryString.ToString(), connection);

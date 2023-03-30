@@ -10,7 +10,7 @@ namespace Employee.Repository.Common
 {
     public interface IEmployeeRepository
     {
-        Task<List<EmployeeModel>> GetAllEmployeeAsync(Paging paging);
+        Task<List<EmployeeModel>> GetAllEmployeeAsync(Paging paging, Sorting sorting);
         Task<EmployeeModel> GetEmployeeAsync(Guid id);
         Task<bool> PostEmployeeAsync(EmployeeModel employee);
         Task<bool> PutEmployeeAsync(Guid id, EmployeeModel employee);
