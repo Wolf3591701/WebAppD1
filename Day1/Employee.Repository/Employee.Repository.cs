@@ -13,7 +13,7 @@ namespace Employee.Repository
     {
         static string connectionString = "Data Source=DESKTOP-DG2UJNT;Initial Catalog=RentCar;Integrated Security=True";
 
-        public async Task<List<EmployeeModel>> GetAllEmployeeAsync(Paging paging, Sorting sorting)
+        public async Task<List<EmployeeModel>> GetAllEmployeeAsync(Paging paging, Sorting sorting, Filtering filtering)
         {
             try
             {

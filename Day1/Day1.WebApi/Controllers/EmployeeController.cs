@@ -27,9 +27,9 @@ namespace Employee.WebApi.Controllers
 
         // GET api/employee
         [Route("api/employee/GetAllEmployeeAsync")]
-        public async Task<HttpResponseMessage> GetAllEmployeeAsync([FromUri] Paging paging, [FromUri] Sorting sorting)
+        public async Task<HttpResponseMessage> GetAllEmployeeAsync([FromUri] Paging paging, [FromUri] Sorting sorting, [FromUri] Filtering filtering)
         {
-            List<EmployeeModel> employees = await EmployeeService.GetAllEmployeeAsync(paging, sorting);
+            List<EmployeeModel> employees = await EmployeeService.GetAllEmployeeAsync(paging, sorting, filtering);
 
             List<EmployeeRest> employeesRest = new List<EmployeeRest>();
 

@@ -21,15 +21,15 @@ namespace Employee.Service
             EmployeeRepository = employeeRepository;
         }
 
-        public async Task<List<EmployeeModel>> GetAllEmployeeAsync(Paging paging, Sorting sorting)
+        public async Task<List<EmployeeModel>> GetAllEmployeeAsync(Paging paging, Sorting sorting, Filtering filtering)
         {
-            List<EmployeeModel> employees = await EmployeeRepository.GetAllEmployeeAsync(paging, sorting);
+            List<EmployeeModel> employees = await EmployeeRepository.GetAllEmployeeAsync(paging, sorting, filtering);
             return employees;
         }
 
         public async Task<EmployeeModel> GetEmployeeAsync(Guid id)
         {
-            EmployeeModel employeeModel =await EmployeeRepository.GetEmployeeAsync(id);
+            EmployeeModel employeeModel = await EmployeeRepository.GetEmployeeAsync(id);
             return employeeModel;
         }
 
