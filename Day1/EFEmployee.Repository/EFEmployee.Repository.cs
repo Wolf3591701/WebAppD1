@@ -9,6 +9,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.ModelBinding;
 
 namespace EFEmployee.Repository
 {
@@ -27,7 +28,7 @@ namespace EFEmployee.Repository
             try
             {
                // IList<EMPLOYEE> employeeDto;
-                var employeeList = await Context.EMPLOYEE.Select(s => new EmployeeModel()
+                List<EmployeeModel> employeeList = await Context.EMPLOYEE.Select(s => new EmployeeModel()
                 {
                     Id = s.Id,
                     FirstName = s.FirstName,
@@ -47,24 +48,100 @@ namespace EFEmployee.Repository
             }
         }
 
-        public Task<EmployeeModel> GetEmployeeAsync(Guid id)
+        public async Task<EmployeeModel> GetEmployeeAsync(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                EMPLOYEE empById = await Context.EMPLOYEE.FindAsync(id);
+
+                EmployeeModel employee = new EmployeeModel
+                {
+                    Id = empById.Id,
+                    FirstName = empById.FirstName,
+                    LastName = empById.LastName
+                };
+
+                if (empById != null)
+                {
+                   return employee;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
-        public Task<bool> PostEmployeeAsync(EmployeeModel employee)
+        public async Task<bool> PostEmployeeAsync(EmployeeModel employee)
         {
-            throw new NotImplementedException();
+            try
+            {
+                EMPLOYEE employeeDAL = new EMPLOYEE
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = employee.FirstName,
+                    LastName = employee.LastName,
+                    Birthday = employee.Birthday
+                };
+
+                if (employee != null)
+                {
+                    Context.EMPLOYEE.Add(employeeDAL);
+                    await Context.SaveChangesAsync();
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
-        public Task<bool> PutEmployeeAsync(Guid id, EmployeeModel employee)
+        public async Task<bool> PutEmployeeAsync(Guid id, EmployeeModel employee)
         {
-            throw new NotImplementedException();
+            try
+            {
+                EMPLOYEE employeeDAL = await Context.EMPLOYEE.FindAsync(id);
+                if (employeeDAL == null)
+                {
+                    return false;
+                }
+
+                employeeDAL.FirstName = employee.FirstName;
+                employeeDAL.LastName = employee.LastName;
+                employeeDAL.Birthday = employee.Birthday;
+
+                await Context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
-        public Task<bool> DeleteEmployeeAsync(Guid id)
+        public async Task<bool> DeleteEmployeeAsync(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                EMPLOYEE employeeDAL = await Context.EMPLOYEE.FindAsync(id);
+                if (employeeDAL == null)
+                {
+                    return false;
+                }
+
+                Context.EMPLOYEE.Remove(employeeDAL);
+                await Context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }
