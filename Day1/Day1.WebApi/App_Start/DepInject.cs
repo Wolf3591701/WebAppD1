@@ -10,6 +10,8 @@ using Employee.Repository.Common;
 using Employee.Repository;
 using Employee.Service;
 using Employee.Service.Common;
+using EFEmployee.Repository;
+using Employee.DAL;
 
 namespace Day1.WebApi.App_Start
 {
@@ -25,7 +27,8 @@ namespace Day1.WebApi.App_Start
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
 
             builder.RegisterType<EmployeeService>().As<IEmployeeService>();
-            builder.RegisterType<EmployeeRepository>().As<IEmployeeRepository>();
+            builder.RegisterType<EFEmployeeRepository>().As<IEmployeeRepository>();
+            builder.RegisterType<RentCarContext>().AsSelf();
 
             var container = builder.Build();
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);

@@ -1,5 +1,6 @@
 ﻿using Employee.Common;
 using Employee.Model;
+using Employee.Model.Common;
 using Employee.Repository.Common;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,14 @@ namespace Employee.Repository
                     StringBuilder queryString = new StringBuilder();
                     queryString.AppendLine("SELECT * FROM EMPLOYEE ");
 
+                    if (filtering != null)
+                    {
+                       if (filtering.EmployeeId != Guid.Empty)
+                        {
+                            queryString.AppendLine("WHERE 1=1 AND EmployeeId = @employeeId");
+                        }
+                    }
+
                     if (sorting != null)
                     {
                         queryString.AppendLine($"ORDER BY {sorting.OrderBy} ");
@@ -35,6 +44,7 @@ namespace Employee.Repository
                     }
 
                     SqlCommand command = new SqlCommand(queryString.ToString(), connection);
+                    command.Parameters.AddWithValue("@employeeId", filtering.EmployeeId);
                     command.Parameters.AddWithValue("@pageNumber", paging.PageNumber);
                     command.Parameters.AddWithValue("@pageSize", paging.PageSize);
 
