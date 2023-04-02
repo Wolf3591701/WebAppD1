@@ -28,6 +28,44 @@ namespace EFEmployee.Repository
             try
             {
                // IList<EMPLOYEE> employeeDto;
+            
+                IQueryable<EMPLOYEE> query = Context.EMPLOYEE.AsQueryable();
+
+                if (filtering != null)
+                {
+                    if (filtering.FirstName != null)
+                    {
+                        query = query.Where(e => e.FirstName == filtering.FirstName);
+                    }
+
+                    if (filtering.LastName != null)
+                    {
+                        query = query.Where(e => e.LastName == filtering.LastName);
+                    }
+                }
+
+                if (sorting != null)
+                {
+                    if (sorting.OrderBy.Equals("Id"))
+                    {
+                        query = query.OrderBy(e => e.Id);
+                    }
+                    else if (sorting.OrderBy.Equals("FirstName"))
+                    {
+                        query.OrderBy(e => e.FirstName);
+                    }
+                    else if (sorting.OrderBy.Equals("LastName"))
+                    {
+                        query.OrderBy(e => e.LastName);
+                    }
+                } 
+
+                if (paging != null && paging.PageNumber > 0)
+                    {
+                        int skipCount = (int)((paging.PageNumber - 1) * paging.PageSize);
+                        query = query.Skip(skipCount).Take((int)paging.PageSize);
+                    }
+
                 List<EmployeeModel> employeeList = await Context.EMPLOYEE.Select(s => new EmployeeModel()
                 {
                     Id = s.Id,
@@ -35,12 +73,7 @@ namespace EFEmployee.Repository
                     LastName = s.LastName,
                 }).ToListAsync();
 
-                if (employeeList.Count == 0)
-                {
-                    return null;
-                }
-                return employeeList;
-
+            return employeeList;
             }
             catch (Exception)
             {

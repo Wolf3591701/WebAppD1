@@ -9,5 +9,8 @@ namespace Employee.Common
     public class Filtering
     {
         public Guid EmployeeId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+
     }
 }

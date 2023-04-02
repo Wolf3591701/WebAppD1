@@ -58,12 +58,13 @@ namespace Employee.Repository
 
                     while (reader.Read())
                     {
-                        EmployeeModel emp = new EmployeeModel();
-
-                        emp.Id = reader.GetGuid(0);
-                        emp.FirstName = reader.GetString(1);
-                        emp.LastName = reader.GetString(2);
-                        emp.Birthday = reader.GetDateTime(3);
+                        EmployeeModel emp = new EmployeeModel
+                        {
+                            Id = reader.GetGuid(0),
+                            FirstName = reader.GetString(1),
+                            LastName = reader.GetString(2),
+                            Birthday = reader.GetDateTime(3)
+                        };
 
                         employees.Add(emp);
                     }
