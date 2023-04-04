@@ -12,5 +12,7 @@ namespace Employee.MVC.Models
         
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? Birthday { get; set; }
     }
 }

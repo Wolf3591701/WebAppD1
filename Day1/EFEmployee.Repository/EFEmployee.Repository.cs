@@ -71,6 +71,7 @@ namespace EFEmployee.Repository
                     Id = s.Id,
                     FirstName = s.FirstName,
                     LastName = s.LastName,
+                    Birthday = (DateTime)s.Birthday
                 }).ToListAsync();
 
             return employeeList;
@@ -85,16 +86,17 @@ namespace EFEmployee.Repository
         {
             try
             {
-                EMPLOYEE empById = await Context.EMPLOYEE.FindAsync(id);
+                EMPLOYEE emp = await Context.EMPLOYEE.FindAsync(id);
 
                 EmployeeModel employee = new EmployeeModel
                 {
-                    Id = empById.Id,
-                    FirstName = empById.FirstName,
-                    LastName = empById.LastName
+                    Id = emp.Id,
+                    FirstName = emp.FirstName,
+                    LastName = emp.LastName,
+                    Birthday = (DateTime)emp.Birthday
                 };
 
-                if (empById != null)
+                if (emp != null)
                 {
                    return employee;
                 }

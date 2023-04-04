@@ -97,5 +97,6 @@ namespace Employee.DAL
                 .WithRequired(e => e.MODEL)
                 .WillCascadeOnDelete(false);
         }
+
     }
 }
