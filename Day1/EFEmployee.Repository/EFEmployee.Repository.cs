@@ -31,7 +31,7 @@ namespace EFEmployee.Repository
             
                 IQueryable<EMPLOYEE> query = Context.EMPLOYEE.AsQueryable();
 
-                if (filtering != null)
+                /*if (filtering != null)
                 {
                     if (filtering.FirstName != null)
                     {
@@ -50,11 +50,11 @@ namespace EFEmployee.Repository
                     {
                         query = query.OrderBy(e => e.Id);
                     }
-                    else if (sorting.OrderBy.Equals("FirstName"))
+                    if (sorting.OrderBy.Equals("FirstName"))
                     {
                         query.OrderBy(e => e.FirstName);
                     }
-                    else if (sorting.OrderBy.Equals("LastName"))
+                    if (sorting.OrderBy.Equals("LastName"))
                     {
                         query.OrderBy(e => e.LastName);
                     }
@@ -64,7 +64,7 @@ namespace EFEmployee.Repository
                     {
                         int skipCount = (int)((paging.PageNumber - 1) * paging.PageSize);
                         query = query.Skip(skipCount).Take((int)paging.PageSize);
-                    }
+                    }*/
 
                 List<EmployeeModel> employeeList = await Context.EMPLOYEE.Select(s => new EmployeeModel()
                 {
