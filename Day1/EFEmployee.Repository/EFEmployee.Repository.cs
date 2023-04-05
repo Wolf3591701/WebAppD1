@@ -21,8 +21,6 @@ namespace EFEmployee.Repository
             Context = context;
         }
 
-       
-
         public async Task<List<EmployeeModel>> GetAllEmployeeAsync(Paging paging, Sorting sorting, Filtering filtering)
         {
             try
@@ -31,47 +29,51 @@ namespace EFEmployee.Repository
             
                 IQueryable<EMPLOYEE> query = Context.EMPLOYEE.AsQueryable();
 
-                /*if (filtering != null)
+                if (!string.IsNullOrEmpty(filtering.SearchString))
                 {
-                    if (filtering.FirstName != null)
-                    {
-                        query = query.Where(e => e.FirstName == filtering.FirstName);
-                    }
-
-                    if (filtering.LastName != null)
-                    {
-                        query = query.Where(e => e.LastName == filtering.LastName);
-                    }
+                    query = query.Where(e => e.FirstName.Contains(filtering.SearchString) || e.LastName.Contains(filtering.SearchString));
                 }
 
                 if (sorting != null)
                 {
-                    if (sorting.OrderBy.Equals("Id"))
+                    switch (sorting.SortOrder)
                     {
-                        query = query.OrderBy(e => e.Id);
-                    }
-                    if (sorting.OrderBy.Equals("FirstName"))
-                    {
-                        query.OrderBy(e => e.FirstName);
-                    }
-                    if (sorting.OrderBy.Equals("LastName"))
-                    {
-                        query.OrderBy(e => e.LastName);
+                        case "FirstName desc":
+                            query = query.OrderByDescending(e => e.FirstName); 
+                            break;
+                        case "FirstName":
+                            query = query.OrderBy(e => e.FirstName); 
+                            break;
+                        case "LastName desc":
+                            query = query.OrderByDescending(e => e.LastName);
+                            break;
+                        case "LastName":
+                            query = query.OrderBy(e => e.LastName);
+                            break;
+                        case "Birthday desc":
+                            query = query.OrderByDescending(e => e.Birthday);
+                            break;
+                        case "Birthday":
+                            query = query.OrderBy(e => e.Birthday);
+                            break;
+                        default:
+                            query = query.OrderBy(e => e.LastName);
+                            break;
                     }
                 } 
 
-                if (paging != null && paging.PageNumber > 0)
+                /*if (paging != null && paging.PageNumber > 0)
                     {
                         int skipCount = (int)((paging.PageNumber - 1) * paging.PageSize);
                         query = query.Skip(skipCount).Take((int)paging.PageSize);
                     }*/
 
-                List<EmployeeModel> employeeList = await Context.EMPLOYEE.Select(s => new EmployeeModel()
+                List<EmployeeModel> employeeList = await query.Select(s => new EmployeeModel()
                 {
                     Id = s.Id,
                     FirstName = s.FirstName,
                     LastName = s.LastName,
-                    Birthday = (DateTime)s.Birthday
+                    Birthday = s.Birthday
                 }).ToListAsync();
 
             return employeeList;
@@ -93,7 +95,7 @@ namespace EFEmployee.Repository
                     Id = emp.Id,
                     FirstName = emp.FirstName,
                     LastName = emp.LastName,
-                    Birthday = (DateTime)emp.Birthday
+                    Birthday = emp.Birthday
                 };
 
                 if (emp != null)

@@ -6,13 +6,14 @@ using Employee.Service;
 using Employee.Service.Common;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using PagedList;
+using PagedList.Mvc;
 
 namespace Employee.MVC.Controllers
 {
@@ -26,13 +27,19 @@ namespace Employee.MVC.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetAllEmployeeAsync(Paging paging, Sorting sorting, Filtering filtering)
+        public async Task<ActionResult> GetAllEmployeeAsync(Paging paging, Filtering filtering, string sorting2)
         {
             try
             {
-                List<EmployeeModel> employees = await EmployeeService.GetAllEmployeeAsync(paging, sorting, filtering);
+                Sorting sorting1 = new Sorting();
+                sorting1.SortOrder = sorting2;
+                List <EmployeeModel> employees = await EmployeeService.GetAllEmployeeAsync(paging, sorting1, filtering);
 
                 List<EmployeeViewModel> employeesViewModel = new List<EmployeeViewModel>();
+                
+                ViewBag.FirstNameSort = sorting2 == null || String.IsNullOrEmpty(sorting2) ? "FirstName desc" : "";
+                ViewBag.LastNameSort = sorting2 == null || String.IsNullOrEmpty(sorting2) ? "LastName desc" : "";
+                ViewBag.BirthdaySort = sorting2 == null || String.IsNullOrEmpty(sorting2) ? "Birthday desc" : "";
 
                 if (employees == null)
                 {
